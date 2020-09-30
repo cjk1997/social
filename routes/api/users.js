@@ -8,6 +8,7 @@ const {
     registerUser,
     sendFriendRequest,
     acceptFriendRequest,
+    rejectFriendRequest,
 } = require('../../data/users');
 
 const salt = process.env.SALT;
@@ -115,6 +116,16 @@ Router.patch('/friendRequest/send/:id', async function(req, res) {
 Router.patch('/friendRequest/accept/:id', async function(req, res) {
     try {
         const data = await acceptFriendRequest(req.params.id, req.body);
+        res.send(data);
+    } catch {
+        console.log(err);
+        res.status(500).send("Internal server issues, check logs.");
+    };
+});
+
+Router.patch('/friendRequest/reject/:id', async function(req, res) {
+    try {
+        const data = await rejectFriendRequest(req.params.id, req.body);
         res.send(data);
     } catch {
         console.log(err);
