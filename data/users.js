@@ -111,10 +111,33 @@ const acceptFriendRequest = (userID, friendRequest) => {
                 console.log("Connected to server to accept friend request.");
                 const db = client.db(dbName);
                 const collection = db.collection(colName);
-                console.log("friendRequest", friendRequest);
                 collection.updateOne({ _id: ObjectID(userID) }, { $push: { friends: { $each: friendRequest } } })
-                collection.updateOne({ _id: ObjectID(userID) }, { $pullAll: { friendRequests: friendRequest } },
-                function(err, result) {
+                collection.updateOne({ _id: ObjectID(userID) }, 
+                { $pullAll: { friendRequests: friendRequest } }, function(err, result) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                        client.close();
+                    };
+                });
+            };
+        });
+    });
+    return iou;
+};
+
+const rejectFriendRequest = (userID, friendRequest) => {
+    const iou = new Promise((resolve, reject) => {
+        MongoClient.connect(url, settings, function(err, client) {
+            if (err) {
+                reject(err);
+            } else {
+                console.log("Connected to server to reject friend request.");
+                const db = client.db(dbName);
+                const collection = db.collection(colName);
+                collection.updateOne({ _id: ObjectID(userID) },
+                { $pullAll: { friendRequests: friendRequest } }, function(err, result) {
                     if (err) {
                         reject(err);
                     } else {
@@ -134,4 +157,5 @@ module.exports = {
     registerUser,
     sendFriendRequest,
     acceptFriendRequest,
+    rejectFriendRequest,
 };
