@@ -108,7 +108,7 @@ Router.patch('/friendRequest/send/:id', async function(req, res) {
     try {
         const data = await sendFriendRequest(req.params.id, req.body);
         res.send(data);
-    } catch {
+    } catch (err) {
         console.log(err);
         res.status(500).send("Internal server issues, check logs.");
     };
@@ -118,7 +118,7 @@ Router.patch('/friendRequest/accept/:id', async function(req, res) {
     try {
         const data = await acceptFriendRequest(req.params.id, req.body);
         res.send(data);
-    } catch {
+    } catch (err) {
         console.log(err);
         res.status(500).send("Internal server issues, check logs.");
     };
@@ -128,7 +128,7 @@ Router.patch('/friendRequest/reject/:id', async function(req, res) {
     try {
         const data = await rejectFriendRequest(req.params.id, req.body);
         res.send(data);
-    } catch {
+    } catch (err) {
         console.log(err);
         res.status(500).send("Internal server issues, check logs.");
     };
@@ -138,7 +138,7 @@ Router.patch('/friend/delete/:id', async function(req, res) {
     try {
         const data = await deleteFriend(req.params.id, req.body);
         res.send(data);
-    } catch {
+    } catch (err) {
         console.log(err);
         res.status(500).send("Internal server issues, check logs.");
     };
