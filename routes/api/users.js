@@ -3,12 +3,32 @@ const Router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const {
+    getUsers,
     getUser,
     registerUser,
+    sendFriendRequest,
 } = require('../../data/users');
 
 const salt = process.env.SALT;
 const privateKey = process.env.PRIVATE_KEY;
+
+Router.get('/', async function(req, res) {
+    try {
+        const usersArray = await getUsers();
+        if (usersArray.length === 0) {
+            res.status(401).send("User Retrieval Failed")
+            console.log("No users exist.")
+        } else {
+            const users = usersArray.filter((user) => user.email != "admin@admin.com").map((user) => {
+                    return { "_id": user._id, "firstName": user.firstName, "lastName": user.lastName, "profilePic": user.profilePic }
+            });
+            res.send(users);
+        };
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Internal server issues, check logs.");
+    };
+});
 
 Router.post('/login', async function(req, res) {
     try {
@@ -75,6 +95,17 @@ Router.post('/register', async function(req, res) {
                 );
             });
         });
+    } catch {
+        console.log(err);
+        res.status(500).send("Internal server issues, check logs.");
+    };
+});
+
+Router.patch('/friendRequest/send/:id', async function(req, res) {
+    try {
+        console.log("req.body", req.body);
+        const data = await sendFriendRequest(req.params.id, req.body);
+        res.send(data);
     } catch {
         console.log(err);
         res.status(500).send("Internal server issues, check logs.");
