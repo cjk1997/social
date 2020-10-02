@@ -115,7 +115,8 @@ const removeMember = (groupID, member) => {
                 const db = client.db(dbName);
                 const collection = db.collection(colName);
                 collection.updateOne({ _id: ObjectID(groupID) },
-                { $pullAll: { members: member } }, function(err, result) {
+                { $pullAll: { members: member } }, 
+                function(err, result) {
                     if (err) {
                         reject(err);
                     } else {
