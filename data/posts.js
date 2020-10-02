@@ -81,6 +81,56 @@ const editPost = (postID, post) => {
     return iou;
 };
 
+const likePost = (postID, user) => {
+    const iou = new Promise((resolve, reject) => {
+        MongoClient.connect(url, settings, function(err, client) {
+            if (err) {
+                reject(err);
+            } else {
+                console.log("Connected to server to like post.");
+                const db = client.db(dbName);
+                const collection = db.collection(colName);
+                collection.updateOne({ _id: ObjectID(postID) },
+                { $push: { likes: { $each: user } } },
+                function(err, result) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                        client.close();
+                    };
+                });
+            };
+        });
+    });
+    return iou;
+};
+
+const unlikePost = (postID, user) => {
+    const iou = new Promise((resolve, reject) => {
+        MongoClient.connect(url, settings, function(err, client) {
+            if (err) {
+                reject(err);
+            } else {
+                console.log("Connected to server to unlike post.");
+                const db = client.db(dbName);
+                const collection = db.collection(colName);
+                collection.updateOne({ _id: ObjectID(postID) },
+                { $pullAll: { likes: user } },
+                function(err, result) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                        client.close();
+                    };
+                });
+            };
+        });
+    });
+    return iou;
+};
+
 const deletePost = (postID) => {
     const iou = new Promise((resolve, reject) => {
         MongoClient.connect(url, settings, function(err, client) {
@@ -108,5 +158,7 @@ module.exports = {
     getPosts,
     createPost,
     editPost,
+    likePost,
+    unlikePost,
     deletePost,
 };
