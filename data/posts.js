@@ -131,7 +131,30 @@ const unlikePost = (postID, user) => {
     return iou;
 };
 
-const writeComment = () => {}
+const postComment = (postID, comment) => {
+    const iou = new Promise((resolve, reject) => {
+        MongoClient.connect(url, settings, function(err, client) {
+            if (err) {
+                reject(err);
+            } else {
+                console.log("Connected to server to post comment.");
+                const db = client.db(dbName);
+                const collection = db.collection(colName);
+                collection.updateOne({ _id: ObjectID(postID) },
+                { $push: { comments: { $each: comment } } },
+                function(err, result) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                        client.close();
+                    };
+                });
+            };
+        });
+    });
+    return iou;
+};
 
 const editComment = () => {}
 
@@ -187,6 +210,8 @@ const unlikeComment = (postID, commentID, user) => {
     return iou;
 };
 
+const deleteComment = () => {}
+
 const deletePost = (postID) => {
     const iou = new Promise((resolve, reject) => {
         MongoClient.connect(url, settings, function(err, client) {
@@ -216,6 +241,7 @@ module.exports = {
     editPost,
     likePost,
     unlikePost,
+    postComment,
     likeComment,
     unlikeComment,
     deletePost,
