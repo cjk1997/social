@@ -123,9 +123,9 @@ Router.patch('/comment/delete/:postID/:commentID', async function(req, res) {
     };
 });
 
-Router.delete('/delete/:id', async function(req, res) {
+Router.delete('/delete/:authorID/:postID', async function(req, res) {
     try {
-        const data = await deletePost(req.params.id);
+        const data = await deletePost(req.params.authorID, req.params.postID);
         res.send(data);
     } catch (err) {
         console.log(err);
