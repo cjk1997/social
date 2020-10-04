@@ -234,7 +234,30 @@ const unlikeComment = (postID, commentID, user) => {
     return iou;
 };
 
-const deleteComment = () => {}
+const deleteComment = (postID, commentID) => {
+    const iou = new Promise((resolve, reject) => {
+        MongoClient.connect(url, settings, function(err, client) {
+            if (err) {
+                reject(err);
+            } else {
+                console.log("Connected to server to delete comment.");
+                const db = client.db(dbName);
+                const collection = db.collection(colName);
+                collection.updateOne({ _id: ObjectID(postID) },
+                { $pull: { comments: { _id: ObjectID(commentID) } } },
+                function(err, result) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                        client.close();
+                    };
+                });
+            };
+        });
+    });
+    return iou;
+};
 
 const deletePost = (postID) => {
     const iou = new Promise((resolve, reject) => {
@@ -269,5 +292,6 @@ module.exports = {
     editComment,
     likeComment,
     unlikeComment,
+    deleteComment,
     deletePost,
 };
