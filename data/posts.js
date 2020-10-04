@@ -131,6 +131,62 @@ const unlikePost = (postID, user) => {
     return iou;
 };
 
+const writeComment = () => {}
+
+const editComment = () => {}
+
+const likeComment = (postID, commentID, user ) => {
+    const iou = new Promise((resolve, reject) => {
+        MongoClient.connect(url, settings, function(err, client) {
+            if (err) {
+                reject(err);
+            } else {
+                console.log("Connected to server to like comment.");
+                const db = client.db(dbName);
+                const collection = db.collection(colName);
+                collection.updateOne({ _id: ObjectID(postID) },
+                { $push: { "comments.$[comment].likes": user } },
+                { arrayFilters: [{ "comment._id": ObjectID(commentID) }] },
+                function(err, result) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                        client.close();
+                    };
+                });
+            };
+        });
+    });
+    return iou;
+};
+
+const unlikeComment = (postID, commentID, user) => {
+    const iou = new Promise((resolve, reject) => {
+        MongoClient.connect(url, settings, function(err, client) {
+            if (err) {
+                reject(err);
+            } else {
+                console.log("Connected to server to unlike comment.");
+                const db = client.db(dbName);
+                const collection = db.collection(colName);
+                collection.updateOne({ _id: ObjectID(postID) },
+                { $pullAll: { "comments.$[comment].likes": user } },
+                { arrayFilters: [{ "comment._id": ObjectID(commentID) }] },
+                function(err, result) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                        client.close();
+                    };
+                });
+            };
+        });
+    });
+    return iou;
+};
+
 const deletePost = (postID) => {
     const iou = new Promise((resolve, reject) => {
         MongoClient.connect(url, settings, function(err, client) {
@@ -160,5 +216,7 @@ module.exports = {
     editPost,
     likePost,
     unlikePost,
+    likeComment,
+    unlikeComment,
     deletePost,
 };
