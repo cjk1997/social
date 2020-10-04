@@ -11,6 +11,7 @@ const {
     editComment,
     likeComment,
     unlikeComment,
+    deleteComment,
     deletePost,
 } = require('../../data/posts');
 
@@ -104,6 +105,16 @@ Router.patch('/comment/unlike/:id', async function(req, res) {
     try {
         const body = req.body;
         const data = await unlikeComment(req.params.id, body.commentID, body.user);
+        res.send(data);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Internal server issues, check logs.");
+    };
+});
+
+Router.patch('/comment/delete/:postID/:commentID', async function(req, res) {
+    try {
+        const data = await deleteComment(req.params.postID, req.params.commentID);
         res.send(data);
     } catch (err) {
         console.log(err);
