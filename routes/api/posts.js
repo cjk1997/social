@@ -1,4 +1,5 @@
 const express = require('express');
+const ObjectID = require('mongodb').ObjectID;
 const Router = express.Router();
 const {
     getPosts,
@@ -6,6 +7,7 @@ const {
     editPost,
     likePost,
     unlikePost,
+    postComment,
     likeComment,
     unlikeComment,
     deletePost,
@@ -54,6 +56,18 @@ Router.patch('/like/:id', async function(req, res) {
 Router.patch('/unlike/:id', async function(req, res) {
     try {
         const data = await unlikePost(req.params.id, req.body);
+        res.send(data);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Internal server issues, check logs.");
+    };
+});
+
+Router.patch('/comment/:id', async function(req, res) {
+    try {
+        const body = req.body;
+        body[0]._id = ObjectID();
+        const data = await postComment(req.params.id, body);
         res.send(data);
     } catch (err) {
         console.log(err);
