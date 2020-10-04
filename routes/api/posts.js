@@ -27,7 +27,8 @@ Router.get('/', async function(req, res) {
 
 Router.post('/create', async function(req, res) {
     try {
-        const data = await createPost(req.body);
+        const body = req.body;
+        const data = await createPost(body.author, body);
         res.send(data);
     } catch (err) {
         console.log(err);
