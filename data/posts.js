@@ -156,7 +156,31 @@ const postComment = (postID, comment) => {
     return iou;
 };
 
-const editComment = () => {}
+const editComment = (postID, commentID, comment) => {
+    const iou = new Promise((resolve, reject) => {
+        MongoClient.connect(url, settings, function(err, client) {
+            if (err) {
+                reject(err);
+            } else {
+                console.log("Connected to server to edit comment.");
+                const db = client.db(dbName);
+                const collection = db.collection(colName);
+                collection.updateOne({ _id: ObjectID(postID) },
+                { $set: { "comments.$[comment].comment": comment } },
+                { arrayFilters: [{ "comment._id": ObjectID(commentID) }] },
+                function(err, result) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                        client.close();
+                    };
+                });
+            };
+        });
+    });
+    return iou;
+};
 
 const likeComment = (postID, commentID, user ) => {
     const iou = new Promise((resolve, reject) => {
@@ -242,6 +266,7 @@ module.exports = {
     likePost,
     unlikePost,
     postComment,
+    editComment,
     likeComment,
     unlikeComment,
     deletePost,
