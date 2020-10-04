@@ -6,6 +6,8 @@ const {
     editPost,
     likePost,
     unlikePost,
+    likeComment,
+    unlikeComment,
     deletePost,
 } = require('../../data/posts');
 
@@ -52,6 +54,28 @@ Router.patch('/like/:id', async function(req, res) {
 Router.patch('/unlike/:id', async function(req, res) {
     try {
         const data = await unlikePost(req.params.id, req.body);
+        res.send(data);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Internal server issues, check logs.");
+    };
+});
+
+Router.patch('/comment/like/:id', async function(req, res) {
+    try {
+        const body = req.body;
+        const data = await likeComment(req.params.id, body.commentID, body.user);
+        res.send(data);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Internal server issues, check logs.");
+    };
+});
+
+Router.patch('/comment/unlike/:id', async function(req, res) {
+    try {
+        const body = req.body;
+        const data = await unlikeComment(req.params.id, body.commentID, body.user);
         res.send(data);
     } catch (err) {
         console.log(err);
