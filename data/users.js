@@ -40,7 +40,7 @@ const getUser = (key, value) => {
                 console.log("Connected to server to retrieve user.");
                 const db = client.db(dbName);
                 const collection = db.collection(colName);
-                collection.find({ [key]: value }).toArray((err, result) => {
+                collection.find({ [key]: value }).toArray(function(err, result) {
                     if (err) {
                         reject(err);
                     } else {
@@ -63,7 +63,8 @@ const registerUser = (user) => {
                 console.log("Connected to server to register user.")
                 const db = client.db(dbName);
                 const collection = db.collection(colName);
-                collection.insertOne(user, (err, result) => {
+                collection.insertOne(user, 
+                function(err, result) {
                     if (err) {
                         reject(err);
                     } else {
@@ -113,7 +114,8 @@ const acceptFriendRequest = (userID, friendRequest) => {
                 const collection = db.collection(colName);
                 collection.updateOne({ _id: ObjectID(userID) }, { $push: { friends: { $each: friendRequest } } })
                 collection.updateOne({ _id: ObjectID(userID) }, 
-                { $pullAll: { friendRequests: friendRequest } }, function(err, result) {
+                { $pullAll: { friendRequests: friendRequest } }, 
+                function(err, result) {
                     if (err) {
                         reject(err);
                     } else {
@@ -137,7 +139,8 @@ const rejectFriendRequest = (userID, friendRequest) => {
                 const db = client.db(dbName);
                 const collection = db.collection(colName);
                 collection.updateOne({ _id: ObjectID(userID) },
-                { $pullAll: { friendRequests: friendRequest } }, function(err, result) {
+                { $pullAll: { friendRequests: friendRequest } }, 
+                function(err, result) {
                     if (err) {
                         reject(err);
                     } else {
@@ -161,7 +164,8 @@ const deleteFriend = (userID, friend) => {
                 const db = client.db(dbName);
                 const collection = db.collection(colName);
                 collection.updateOne({ _id: ObjectID(userID) },
-                { $pullAll: { friends: friend } }, function(err, result) {
+                { $pullAll: { friends: friend } }, 
+                function(err, result) {
                     if (err) {
                         reject(err);
                     } else {
