@@ -46,7 +46,6 @@ const createPost = (authorID, post) => {
                         reject(err);
                     } else {
                         newPostID.push(result.insertedId.toString());
-                        console.log("newPostID", newPostID);
                     };
                 });
                 collection = db.collection('users');
@@ -269,7 +268,7 @@ const deleteComment = (postID, commentID) => {
     return iou;
 };
 
-const deletePost = (postID) => {
+const deletePost = (authorID, postID) => {
     const iou = new Promise((resolve, reject) => {
         MongoClient.connect(url, settings, function(err, client) {
             if (err) {
@@ -277,11 +276,22 @@ const deletePost = (postID) => {
             } else {
                 console.log("Connected to server to delete post.");
                 const db = client.db(dbName);
-                const collection = db.collection(colName);
+                let collection = db.collection('users');
+                collection.updateOne({ _id: ObjectID(authorID) },
+                { $pull: { posts: postID } },
+                function(err, result) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        console.log("Removed post ID from user profile.");
+                    };
+                });
+                collection = db.collection(colName);
                 collection.deleteOne({ _id: ObjectID(postID) }, function(err, result) {
                     if (err) {
                         reject(err);
                     } else {
+                        console.log("Removed post.")
                         resolve(result);
                         client.close();
                     };
