@@ -1,5 +1,3 @@
-const { set } = require('../app');
-
 const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID;
 
@@ -33,16 +31,28 @@ const getPosts = () => {
     return iou;
 };
 
-const createPost = (post) => {
+const createPost = (authorID, post) => {
     const iou = new Promise((resolve, reject) => {
         MongoClient.connect(url, settings, function(err, client) {
             if (err) {
                 reject(err);
             } else {
                 console.log("Connected to server to create post.");
+                let newPostID = [];
                 const db = client.db(dbName);
-                const collection = db.collection(colName);
+                let collection = db.collection(colName);
                 collection.insertOne(post, function(err, result) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        newPostID.push(result.insertedId.toString());
+                        console.log("newPostID", newPostID);
+                    };
+                });
+                collection = db.collection('users');
+                collection.updateOne({ _id: ObjectID(authorID) },
+                { $push: { posts: { $each: newPostID} } },
+                function(err, result) {
                     if (err) {
                         reject(err);
                     } else {
